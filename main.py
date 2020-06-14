@@ -23,13 +23,13 @@ X = util.make_dataset(wavlist[1:], fftsize, hopsize, nbit)
 
 #%% model training
 height, width = fftsize//2, fftsize//2 #CNN height x width
-X_train = X[:,height,:width,...]
+X_train = X[:,:height,:width,...]
 model,_ = nw.autoencoder(height, width)
 model.compile(optimizer='adam', loss='mean_squared_error')
 history = model.fit(X_train, X_train, epochs=5, batch_size=32)
 
 #%% model testing
-absY, phsY, max_Y, min_Y = util.make_spectrogram(wavlist, fftsize, hopsize, nbit, istest=True)
+absY, phsY, max_Y, min_Y = util.make_spectrogram(wavlist[0], fftsize, hopsize, nbit, istest=True)
 P = np.squeeze(model.predict(absY[np.newaxis,:height,:width,...]))
 P = np.hstack((P,absY[:height,width:])) #t-axis
 P = np.vstack((P,absY[height,:])) #f-axis
